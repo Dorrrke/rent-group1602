@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/Dorrrke/rent-group1602/internal/service/auth"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,15 +18,15 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		_ = strings.Split(authHeader, " ")[1]
+		tokenString := strings.Split(authHeader, " ")[1]
 
-		// uid, err := auth.ParseToken(tokenString)
-		// if err != nil {
-		// 	ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-		// 	return
-		// }
+		uid, err := auth.ParseToken(tokenString)
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			return
+		}
 
-		ctx.Set("uid", "uid")
+		ctx.Set("uid", uid)
 		ctx.Next()
 	}
 }
