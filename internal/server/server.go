@@ -7,6 +7,7 @@ import (
 	"github.com/Dorrrke/rent-group1602/internal/server/auth"
 	"github.com/Dorrrke/rent-group1602/internal/server/cars"
 	"github.com/Dorrrke/rent-group1602/internal/server/middleware"
+	"github.com/Dorrrke/rent-group1602/internal/server/profile"
 	"github.com/Dorrrke/rent-group1602/internal/server/users"
 
 	"github.com/gin-gonic/gin"
@@ -20,13 +21,15 @@ func New(
 	addr string,
 	usersService users.UserService,
 	carService cars.CarsService,
+	profileService profile.ProfileService,
 ) *Server {
 	srv := &http.Server{
 		Addr: addr,
 	}
 	uh := users.New(usersService)
 	ch := cars.New(carService)
-	r := configureRouter(uh, ch)
+	ph := profile.New(profileService)
+	r := configureRouter(uh, ch, ph)
 	srv.Handler = r
 
 	return &Server{
@@ -44,6 +47,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 func configureRouter(
 	uh *users.UsersHandler,
 	ch *cars.CarsHandlers,
+	ph *profile.ProfileHandlers,
 ) *gin.Engine {
 	router := gin.Default()
 
@@ -55,8 +59,8 @@ func configureRouter(
 
 	profile := router.Group("/profile")
 	profile.Use(middleware.AuthMiddleware())
-	profile.GET("/get")
-	profile.GET("/history")
+	profile.GET("/get", ph.GetProfile)
+	profile.GET("/history", ph.GetHistory)
 
 	cars := router.Group("/cars")
 	cars.POST("/add", middleware.AuthMiddleware(), ch.AddCarHandler)

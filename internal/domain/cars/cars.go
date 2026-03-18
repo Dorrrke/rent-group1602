@@ -16,6 +16,7 @@ type Rent struct {
 	CID   string
 	UID   string
 	Hours int
+	Ended bool
 }
 
 type AddCarRequest struct {
@@ -28,11 +29,11 @@ type AddCarRequest struct {
 }
 
 type StartRentRequest struct {
-	CID   string `json:"cid"`
-	Hours int    `json:"hours"`
+	CID   string `json:"cid" validate:"required"`
+	Hours int    `json:"hours" validate:"required"`
 }
 
 type EndRentRequest struct {
-	CID        string `json:"cid"`
-	TotalHours int    `json:"totalHours"`
+	RID        string `json:"rid" validate:"required"`
+	TotalHours int    `json:"totalHours" validate:"required"`
 }
