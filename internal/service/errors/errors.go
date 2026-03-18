@@ -9,3 +9,8 @@ var (
 const (
 	IncorrectFieldValuesError = "Incorrect field values: %w"
 )
+
+// Cars errors.
+var (
+	ErrCarNotAvailable = errors.New("Car is not available")
+)

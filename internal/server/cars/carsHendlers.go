@@ -11,8 +11,8 @@ import (
 type CarsService interface {
 	AddCar(req carsDomain.AddCarRequest) error
 	GetAllCars() ([]carsDomain.Car, error)
-	StartRent(uid string, req carsDomain.StartRentRequest) (float32, error)
-	EndRent(uid string, req carsDomain.EndRentRequest) (float32, error)
+	StartRent(uid string, req carsDomain.StartRentRequest) (float64, error)
+	EndRent(req carsDomain.EndRentRequest) (float64, error)
 }
 
 type CarsHandlers struct {
@@ -80,7 +80,7 @@ func (ch *CarsHandlers) EndRentHandler(ctx *gin.Context) {
 		return
 	}
 
-	price, error := ch.carsService.EndRent("", req)
+	price, error := ch.carsService.EndRent(req)
 	if error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": error.Error()})
 		return

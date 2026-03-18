@@ -77,7 +77,27 @@ func (s *Storage) GetAllCars() ([]carsDomain.Car, error) {
 	return cars, nil
 }
 
-func (s *Storage) StartRent(uid string, rent carsDomain.Rent) error {
+func (s *Storage) GetCarByCID(cid string) (carsDomain.Car, error) {
+	car, ok := s.cars[cid]
+
+	if !ok {
+		return carsDomain.Car{}, errors.ErrCarNotFound
+	}
+
+	return car, nil
+}
+
+func (s *Storage) GetRentByRID(rid string) (carsDomain.Rent, error) {
+	rent, ok := s.rents[rid]
+
+	if !ok {
+		return carsDomain.Rent{}, errors.ErrRentNotFound
+	}
+
+	return rent, nil
+}
+
+func (s *Storage) StartRent(rent carsDomain.Rent) error {
 	_, ok := s.rents[rent.RID]
 	if ok {
 		return errors.ErrRentAlreadyExists
@@ -87,12 +107,29 @@ func (s *Storage) StartRent(uid string, rent carsDomain.Rent) error {
 	return nil
 }
 
-func (s *Storage) EndRent(uid string, rent carsDomain.Rent) error {
-	_, ok := s.rents[rent.RID]
+func (s *Storage) EndRent(rid string) error {
+	rent, ok := s.rents[rid]
 	if !ok {
 		return errors.ErrRentNotFound
 	}
 
-	delete(s.rents, rent.RID)
+	rent.Ended = true
+	s.rents[rid] = rent
 	return nil
+}
+
+func (s *Storage) GetRentHistoryByID(uid string) ([]carsDomain.Rent, error) {
+	history := []carsDomain.Rent{}
+
+	for _, r := range s.rents {
+		if r.UID == uid {
+			history = append(history, r)
+		}
+	}
+
+	if len(history) == 0 {
+		return nil, errors.ErrEmptyHistory
+	}
+
+	return history, nil
 }
