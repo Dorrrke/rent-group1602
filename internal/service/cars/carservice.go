@@ -4,7 +4,6 @@ import (
 	carsDomain "github.com/Dorrrke/rent-group1602/internal/domain/cars"
 	"github.com/Dorrrke/rent-group1602/internal/service/errors"
 	"github.com/go-playground/validator/v10"
-	"github.com/google/uuid"
 )
 
 type Repository interface {
@@ -35,7 +34,6 @@ func (s *CarService) AddCar(req carsDomain.AddCarRequest) error {
 	}
 
 	car := carsDomain.Car{
-		CID:       uuid.NewString(),
 		Brand:     req.Brand,
 		Model:     req.Model,
 		Color:     req.Color,
@@ -62,7 +60,6 @@ func (s *CarService) StartRent(uid string, req carsDomain.StartRentRequest) (flo
 	}
 
 	rent := carsDomain.Rent{
-		RID:   uuid.NewString(),
 		UID:   uid,
 		CID:   req.CID,
 		Hours: req.Hours,

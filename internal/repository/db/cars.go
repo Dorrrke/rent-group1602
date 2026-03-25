@@ -13,9 +13,9 @@ func (s *Storage) AddCar(car carsDomain.Car) error {
 
 	_, err := s.conn.Exec(
 		ctx,
-		`INSERT INTO cars (cid, brand, model, color, year, number, price, available) 
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-		car.CID, car.Brand, car.Model, car.Color,
+		`INSERT INTO cars (brand, model, color, year, number, price, available) 
+		VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+		car.Brand, car.Model, car.Color,
 		car.Year, car.Number, car.Price, car.Available,
 	)
 	if err != nil {

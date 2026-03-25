@@ -30,9 +30,9 @@ func (s *Storage) StartRent(rent carsDomain.Rent) error {
 	defer cancel()
 
 	_, err := s.conn.Exec(ctx,
-		`INSERT INTO rents (rid, cid, uid, hours, ended) 
-		VALUES ($1, $2, $3, $4, $5)`,
-		rent.RID, rent.CID, rent.UID,
+		`INSERT INTO rents (car_id, user_id, hours, ended) 
+		VALUES ($1, $2, $3, $4)`,
+		rent.CID, rent.UID,
 		rent.Hours, rent.Ended,
 	)
 	if err != nil {
@@ -57,7 +57,7 @@ func (s *Storage) GetRentHistoryByID(uid string) ([]carsDomain.Rent, error) {
 
 	rows, err := s.conn.Query(
 		ctx,
-		"SELECT * FROM rents WHERE uid=$1",
+		"SELECT * FROM rents WHERE user_id=$1",
 		uid,
 	)
 	if err != nil {

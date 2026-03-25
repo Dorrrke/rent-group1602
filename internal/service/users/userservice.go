@@ -5,14 +5,14 @@ import (
 
 	usersDomain "github.com/Dorrrke/rent-group1602/internal/domain/users"
 	"github.com/Dorrrke/rent-group1602/internal/service/errors"
+	"github.com/google/uuid"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Repository interface {
-	SaveUser(user usersDomain.User) error
+	SaveUser(user usersDomain.User) (uuid.UUID, error)
 	GetUserByEmail(email string) (usersDomain.User, error)
 	GetUserByUID(uid string) (usersDomain.User, error)
 }
@@ -40,7 +40,6 @@ func (s *UserService) RegisterUser(req usersDomain.RegisterRequest) (string, err
 	}
 
 	user := usersDomain.User{
-		UID:      uuid.NewString(),
 		Name:     req.Name,
 		Age:      req.Age,
 		Email:    req.Email,
@@ -48,11 +47,12 @@ func (s *UserService) RegisterUser(req usersDomain.RegisterRequest) (string, err
 		Role:     req.Role,
 	}
 
-	if err := s.repo.SaveUser(user); err != nil {
+	uid, err := s.repo.SaveUser(user)
+	if err != nil {
 		return "", err
 	}
 
-	return user.UID, nil
+	return uid.String(), nil
 }
 
 func (s *UserService) LoginUser(req usersDomain.LoginRequest) (usersDomain.User, error) {
