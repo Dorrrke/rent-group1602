@@ -45,7 +45,7 @@ func (s *UserService) RegisterUser(req usersDomain.RegisterRequest) (string, err
 		Age:      req.Age,
 		Email:    req.Email,
 		Password: string(hash),
-		Role:     req.Role,
+		Role:     usersDomain.ParseRole(req.Role),
 	}
 
 	if err := s.repo.SaveUser(user); err != nil {

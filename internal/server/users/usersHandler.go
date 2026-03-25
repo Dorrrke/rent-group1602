@@ -38,12 +38,12 @@ func (h *UsersHandler) Login(ctx *gin.Context) {
 		return
 	}
 
-	accessToken, err := auth.GenerateAccessToken(user.UID)
+	accessToken, err := auth.GenerateAccessToken(user.UID, user.Role)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	refreshToken, err := auth.GenerateRefreshToken(user.UID)
+	refreshToken, err := auth.GenerateRefreshToken(user.UID, user.Role)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

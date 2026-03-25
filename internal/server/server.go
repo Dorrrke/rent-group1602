@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	usersDomain "github.com/Dorrrke/rent-group1602/internal/domain/users"
 	"github.com/Dorrrke/rent-group1602/internal/server/auth"
 	"github.com/Dorrrke/rent-group1602/internal/server/cars"
 	"github.com/Dorrrke/rent-group1602/internal/server/middleware"
@@ -63,10 +64,10 @@ func configureRouter(
 	profile.GET("/history", ph.GetHistory)
 
 	cars := router.Group("/cars")
-	cars.POST("/add", middleware.AuthMiddleware(), ch.AddCarHandler)
+	cars.POST("/add", middleware.AuthMiddleware(), middleware.RoleMiddleware(usersDomain.AdminRole, usersDomain.OwnerRole), ch.AddCarHandler)
 	cars.GET("/get-all", ch.GetAllCarsHandler)
-	cars.POST("/start-rent", middleware.AuthMiddleware(), ch.StartRentHandler)
-	cars.POST("/end-rent", middleware.AuthMiddleware(), ch.EndRentHandler)
+	cars.POST("/start-rent", middleware.AuthMiddleware(), middleware.RoleMiddleware(usersDomain.UserRole), ch.StartRentHandler)
+	cars.POST("/end-rent", middleware.AuthMiddleware(), middleware.RoleMiddleware(usersDomain.UserRole, usersDomain.AdminRole), ch.EndRentHandler)
 
 	return router
 }

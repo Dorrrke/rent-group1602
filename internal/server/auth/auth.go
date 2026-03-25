@@ -17,13 +17,13 @@ func Refresh(ctx *gin.Context) {
 		return
 	}
 
-	uid, err := auth.ParseToken(refreshToken)
+	uid, role, err := auth.ParseToken(refreshToken)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	newAccessToken, err := auth.GenerateAccessToken(uid)
+	newAccessToken, err := auth.GenerateAccessToken(uid, role)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

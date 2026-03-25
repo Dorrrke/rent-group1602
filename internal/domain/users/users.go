@@ -6,7 +6,7 @@ type User struct {
 	Age      int
 	Email    string
 	Password string
-	Role     string // TODO: сделать enum
+	Role     Role
 	Balance  float64
 }
 

@@ -4,19 +4,22 @@ import (
 	"errors"
 	"time"
 
+	"github.com/Dorrrke/rent-group1602/internal/domain/users"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 var jwtSecret = []byte("super-secret")
 
 type TokenClaims struct {
-	UserID string `json:"user_id"`
+	UserID string     `json:"user_id"`
+	Role   users.Role `json:"role"`
 	jwt.RegisteredClaims
 }
 
-func GenerateAccessToken(uid string) (string, error) {
+func GenerateAccessToken(uid string, role users.Role) (string, error) {
 	claims := TokenClaims{
 		UserID: uid,
+		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -28,9 +31,10 @@ func GenerateAccessToken(uid string) (string, error) {
 	return token.SignedString(jwtSecret)
 }
 
-func GenerateRefreshToken(uid string) (string, error) {
+func GenerateRefreshToken(uid string, role users.Role) (string, error) {
 	claims := TokenClaims{
 		UserID: uid,
+		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -42,7 +46,7 @@ func GenerateRefreshToken(uid string) (string, error) {
 	return token.SignedString(jwtSecret)
 }
 
-func ParseToken(tokenString string) (string, error) {
+func ParseToken(tokenString string) (string, users.Role, error) {
 	token, err := jwt.ParseWithClaims(
 		tokenString,
 		&TokenClaims{},
@@ -51,14 +55,14 @@ func ParseToken(tokenString string) (string, error) {
 		},
 	)
 	if err != nil {
-		return "", err
+		return "", -1, err
 	}
 
 	claims, ok := token.Claims.(*TokenClaims)
 
 	if !ok || !token.Valid {
-		return "", errors.New("invalid jwt")
+		return "", -1, errors.New("invalid jwt")
 	}
 
-	return claims.UserID, nil
+	return claims.UserID, claims.Role, nil
 }
