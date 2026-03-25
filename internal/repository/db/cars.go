@@ -26,6 +26,33 @@ func (s *Storage) AddCar(car carsDomain.Car) error {
 	return nil
 }
 
+func (s *Storage) AddCars(cars []carsDomain.Car) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	tx, err := s.conn.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	_, err = tx.Prepare(ctx, "add_car", `INSERT INTO cars (brand, model, color, year, number, price, available) 
+		VALUES ($1, $2, $3, $4, $5, $6, $7)`)
+	if err != nil {
+		return err
+	}
+
+	for _, car := range cars {
+		if _, err := tx.Exec(ctx, "add_car", car.Brand, car.Model, car.Color,
+			car.Year, car.Number, car.Price, car.Available,
+		); err != nil {
+			return err
+		}
+	}
+
+	return tx.Commit(ctx)
+}
+
 func (s *Storage) GetAllCars() ([]carsDomain.Car, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
