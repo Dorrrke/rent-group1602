@@ -9,10 +9,12 @@ import (
 	"github.com/Dorrrke/rent-group1602/internal/service/cars"
 	"github.com/Dorrrke/rent-group1602/internal/service/profile"
 	"github.com/Dorrrke/rent-group1602/internal/service/users"
+	"github.com/rs/zerolog/log"
 )
 
 func main() {
 	cfg := internal.ReadConfig()
+	cfg.ConfigureLogger()
 	repo, err := db.New(cfg.DBDSN)
 	if err != nil {
 		panic(err)
@@ -32,6 +34,7 @@ func main() {
 		profileService,
 	)
 
+	log.Info().Msg("server starting")
 	if err := srv.Run(); err != nil {
 		panic(err)
 	}
